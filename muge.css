@@ -16,8 +16,9 @@
         @media (max-width:820px){ .grid{grid-template-columns:1fr} }
             #explain { display: none !important; }
             body {
-    background-image: url("mahidolHall.jpg");
+    background-image: url("zzz2.jpg");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
 }
+
