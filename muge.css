@@ -3,7 +3,7 @@
                 margin:0;
                 padding:24px;
                 background:#000000
-                min-height: 100vh; 
+                min-height:100vh; 
                 background-image: url("zzz2.jpg");
             background-size: cover;
             background-repeat: no-repeat;
@@ -24,6 +24,7 @@
         .help{font-size:12px;color:#666;margin-top:6px}
         @media (max-width:820px){ .grid{grid-template-columns:1fr} }
             #explain { display: none !important; }
+
 
 
 
