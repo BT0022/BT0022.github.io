@@ -1,0 +1,138 @@
+<!doctype html>
+
+<html lang="th">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>คำนวณ Carbon Footprint ตามยานพาหนะ</title>
+    <link rel="stylesheet" href="muge.css">
+</head>
+<body>
+    <div class="card">
+        <img src="Mahidol_Uni.png" alt="Logo" style="height:50px;margin-bottom:10px"/>
+        <h1>การติดตาม Carbon Footprint จากการเดินทางของนักศึกษา</h1>
+        <p class="lead">แบบสอบถามฉบับนี้เป็นส่วนหนึ่งของรายวิชา MUGE100 มีวัตถุประสงค์ในการจัดเก็บข้อมูลด้านการเดินทางของนักศึกษา</p>
+
+        <div class="grid">
+            <div>
+                <div class="controls">
+                    <label for="vehicle">ประเภทยานพาหนะ</label>
+                    <select id="vehicle">
+                        <option value="car">รถยนต์</option>
+                        <option value="motor">จักรยานยนต์</option>
+                        <option value="ev">รถไฟฟ้า</option>
+                        <option value="bus">รถเมล์/รถโดยสาร</option>
+                    </select>
+
+                    <div id="common">
+                        <label for="distance">ระยะทาง (กิโลเมตร)</label>
+                        <input id="distance" type="number" min="0" value="10" />
+
+                        <label for="passengers">ผู้โดยสาร (สำหรับคำนวณต่อคน)</label>
+                        <input id="passengers" type="number" min="1" value="1" />
+                    </div>
+
+                    <div id="evInputs" style="display:none">
+                        <label for="energy">การใช้พลังงาน (kWh/100 กม.)</label>
+                        <input id="energy" type="number" min="0" step="0.1" value="15" />
+                        <label for="grid">ปัจจัยการปล่อยคาร์บอน (g CO₂ / kWh)</label>
+                        <input id="grid" type="number" min="0" step="1" value="475" />
+                        <small class="help">ค่าเริ่มต้นเป็นค่าเฉลี่ยของกริด (ปรับตามแหล่งพลังงานของประเทศคุณ)</small>
+                    </div>
+
+                    <div style="display:flex;gap:10px;align-items:center">
+                        <button id="calc">คำนวณ</button>
+                        <button id="reset" type="button" style="background:#eee;color:#111">รีเซ็ต</button>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="result">
+                    <div><strong>ผลลัพธ์</strong></div>
+                    <div style="margin-top:10px">
+                        <div id="totalKg" style="font-size:18px;font-weight:600">0 kg CO₂</div>
+                        <div id="perKm" class="muted">0 kg CO₂ / กม.</div>
+                        <div id="perPassenger" class="muted">ต่อคน: -</div>
+                    </div>
+                    <hr style="margin:12px 0">
+                    <div class="muted" id="explain">คำอธิบายผลลัพธ์จะแสดงที่นี่</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const vehicleEl = document.getElementById('vehicle');
+        const evInputs = document.getElementById('evInputs');
+        const calcBtn = document.getElementById('calc');
+        const resetBtn = document.getElementById('reset');
+
+        const EMISSION_PER_KM = {
+            car: 0.192,   
+            motor: 0.07,  
+            bus: 0.2      
+        };
+
+        function showInputs() {
+            const v = vehicleEl.value;
+            evInputs.style.display = (v === 'ev') ? 'block' : 'none';
+        }
+
+        vehicleEl.addEventListener('change', showInputs);
+        showInputs();
+
+        function formatKg(n) {
+            return (Math.round(n*100)/100).toLocaleString() + ' kg CO₂';
+        }
+
+        function calculate() {
+            const vehicle = vehicleEl.value;
+            const distance = parseFloat(document.getElementById('distance').value) || 0;
+            const passengers = parseInt(document.getElementById('passengers').value) || 1;
+
+            if (distance <= 0) {
+                alert('กรุณากรอกระยะทางมากกว่า 0');
+                return;
+            }
+
+            let totalKg = 0;
+            let explain = '';
+
+            if (vehicle === 'ev') {
+                const energy = parseFloat(document.getElementById('energy').value) || 0;
+                const grid = parseFloat(document.getElementById('grid').value) || 0; // g/kWh
+                const kWh = energy * distance / 100;
+                totalKg = kWh * (grid / 1000); 
+                explain = `EV: ${kWh.toFixed(2)} kWh ใช้พลังงานรวม × ${grid} gCO₂/kWh → ${totalKg.toFixed(3)} kg CO₂`;
+            } else {
+                const perKm = EMISSION_PER_KM[vehicle] || 0;
+                totalKg = perKm * distance;
+                explain = `${vehicle === 'car' ? 'รถยนต์' : vehicle === 'motor' ? 'จักรยานยนต์' : 'รถเมล์'}: ${perKm.toFixed(3)} kg CO₂/กม. × ${distance} กม. → ${totalKg.toFixed(3)} kg CO₂`;
+            }
+
+            const perKmVal = totalKg / distance;
+            const perPassenger = passengers > 0 ? (totalKg / passengers) : null;
+
+            document.getElementById('totalKg').textContent = formatKg(totalKg);
+            document.getElementById('perKm').textContent = perKmVal ? perKmVal.toFixed(3) + ' kg CO₂ / กม.' : '';
+            document.getElementById('perPassenger').textContent = perPassenger ? 'ต่อคน: ' + perPassenger.toFixed(3) + ' kg CO₂' : 'ต่อคน: -';
+            document.getElementById('explain').textContent = explain;
+        }
+
+        calcBtn.addEventListener('click', calculate);
+        resetBtn.addEventListener('click', () => {
+            document.getElementById('distance').value = 10;
+            document.getElementById('passengers').value = 1;
+            document.getElementById('energy').value = 15;
+            document.getElementById('grid').value = 475;
+            document.getElementById('vehicle').value = 'car';
+            showInputs();
+            document.getElementById('totalKg').textContent = '0 kg CO₂';
+            document.getElementById('perKm').textContent = '0 kg CO₂ / กม.';
+            document.getElementById('perPassenger').textContent = 'ต่อคน: -';
+            document.getElementById('explain').textContent = 'คำอธิบายผลลัพธ์จะแสดงที่นี่';
+        });
+    </script>
+</body>
+</html>
