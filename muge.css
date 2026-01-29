@@ -1,5 +1,13 @@
         :root{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans","Helvetica Neue",Arial; color:#222}
-        body{margin:0;padding:24px;background:#000000}
+        body{
+                margin:0;
+                padding:24px;
+                background:#000000
+                    background-image: url("zzz2.jpg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
         .card{max-width:880px;margin:0 auto;background:rgba(255, 255, 255, 0.75);border-radius:18px;padding: 24px;box-shadow:0 6px 20px rgba(0, 0, 0, 0.7)}
         h1{margin:0 0 8px;font-size:18px}
         p.lead{margin:0 0 18px;color:#555}
@@ -15,10 +23,5 @@
         .help{font-size:12px;color:#666;margin-top:6px}
         @media (max-width:820px){ .grid{grid-template-columns:1fr} }
             #explain { display: none !important; }
-            body {
-    background-image: url("zzz2.jpg");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-}
+
 
