@@ -62,9 +62,15 @@
                 </div>
             </div>
         </div>
+        <button class="open-btn" onclick="openPopup()">
+            ↗ <span>ทำแบบสอบถาม</span>
+        </button>
     </div>
 
     <script>
+        function openPopup() {
+  window.open("https://docs.google.com/forms/d/e/1FAIpQLSelHlFOu_RYDh0yHT_tlQ-XvJpMxj5nTvtbmvulOF54x1ZY5g/viewform?usp=header", "popupWindow", "width=900,height=600");
+}
         const vehicleEl = document.getElementById('vehicle');
         const evInputs = document.getElementById('evInputs');
         const calcBtn = document.getElementById('calc');
